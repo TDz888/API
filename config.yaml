@@ -1,0 +1,380 @@
+# =============================================================================
+# AI Gateway Configuration v1.0
+# Aggregates 10 free LLM providers into one OpenAI-compatible endpoint
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# MODEL REGISTRY - 25+ models from 10 providers
+# ---------------------------------------------------------------------------
+model_list:
+
+  # ==================== 1. GROQ (Ultra-fast inference) ====================
+  - model_name: groq-llama-3.3-70b
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+    model_info:
+      mode: chat
+      max_tokens: 8192
+      notes: "14,400 req/day | 12,000 TPM"
+
+  - model_name: groq-llama-4-scout
+    litellm_params:
+      model: groq/llama-4-scout-17b-16e-instruct
+      api_key: os.environ/GROQ_API_KEY
+    model_info:
+      mode: chat
+      notes: "1,000 req/day | 30,000 TPM"
+
+  - model_name: groq-gemma-3
+    litellm_params:
+      model: groq/gemma-3-12b-it
+      api_key: os.environ/GROQ_API_KEY
+    model_info:
+      mode: chat
+      notes: "14,400 req/day"
+
+  - model_name: groq-whisper-large
+    litellm_params:
+      model: groq/whisper-large-v3
+      api_key: os.environ/GROQ_API_KEY
+    model_info:
+      mode: audio_transcription
+      notes: "2,000 req/day"
+
+  # ==================== 2. OPENROUTER (Free tier) ====================
+  - model_name: openrouter-kimi-k2.6
+    litellm_params:
+      model: openrouter/moonshotai/kimi-k2.6:free
+      api_key: os.environ/OPENROUTER_API_KEY
+    model_info:
+      mode: chat
+      notes: "50 req/day share quota"
+
+  - model_name: openrouter-llama-3.3-70b
+    litellm_params:
+      model: openrouter/meta-llama/llama-3.3-70b-instruct:free
+      api_key: os.environ/OPENROUTER_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: openrouter-gpt-oss-120b
+    litellm_params:
+      model: openrouter/openai/gpt-oss-120b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: openrouter-deepseek-v4-flash
+    litellm_params:
+      model: openrouter/deepseek/deepseek-v4-flash:free
+      api_key: os.environ/OPENROUTER_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: openrouter-gemma-4-26b
+    litellm_params:
+      model: openrouter/google/gemma-4-26b-a4b-it:free
+      api_key: os.environ/OPENROUTER_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: openrouter-qwen3-coder
+    litellm_params:
+      model: openrouter/qwen/qwen3-coder:free
+      api_key: os.environ/OPENROUTER_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: openrouter-glm-4.5-air
+    litellm_params:
+      model: openrouter/z-ai/glm-4.5-air:free
+      api_key: os.environ/OPENROUTER_API_KEY
+    model_info:
+      mode: chat
+
+  # ==================== 3. NVIDIA NIM ====================
+  - model_name: nvidia-llama-3.1-70b
+    litellm_params:
+      model: nv_nim/meta/llama-3.1-70b-instruct
+      api_key: os.environ/NVIDIA_API_KEY
+    model_info:
+      mode: chat
+      notes: "40 req/min | requires phone verification"
+
+  - model_name: nvidia-nemotron-3-super
+    litellm_params:
+      model: nv_nim/nvidia/nemotron-3-super-120b-a12b
+      api_key: os.environ/NVIDIA_API_KEY
+    model_info:
+      mode: chat
+
+  # ==================== 4. MISTRAL ====================
+  - model_name: mistral-small
+    litellm_params:
+      model: mistral/mistral-small-latest
+      api_key: os.environ/MISTRAL_API_KEY
+    model_info:
+      mode: chat
+      notes: "1 req/sec | 1B tokens/month"
+
+  - model_name: mistral-large
+    litellm_params:
+      model: mistral/mistral-large-latest
+      api_key: os.environ/MISTRAL_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: mistral-codestral
+    litellm_params:
+      model: mistral/codestral-latest
+      api_key: os.environ/MISTRAL_API_KEY
+    model_info:
+      mode: chat
+      notes: "30 req/min | 2,000 req/day"
+
+  # ==================== 5. GOOGLE GEMINI ====================
+  - model_name: gemini-2.5-flash
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      notes: "20 req/day | 5 req/min"
+
+  - model_name: gemini-3.1-flash-lite
+    litellm_params:
+      model: gemini/gemini-3.1-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      notes: "500 req/day | 15 req/min"
+
+  - model_name: gemma-3-27b
+    litellm_params:
+      model: gemini/gemma-3-27b-it
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      notes: "14,400 req/day | 30 req/min"
+
+  - model_name: gemma-3-12b
+    litellm_params:
+      model: gemini/gemma-3-12b-it
+      api_key: os.environ/GEMINI_API_KEY
+    model_info:
+      mode: chat
+      notes: "14,400 req/day | 30 req/min"
+
+  # ==================== 6. CEREBRAS ====================
+  - model_name: cerebras-llama-3.1-8b
+    litellm_params:
+      model: cerebras/llama3.1-8b
+      api_key: os.environ/CEREBRAS_API_KEY
+    model_info:
+      mode: chat
+      notes: "14,400 req/day | 60K TPM | ~2,100 t/s"
+
+  - model_name: cerebras-gpt-oss-120b
+    litellm_params:
+      model: cerebras/gpt-oss-120b
+      api_key: os.environ/CEREBRAS_API_KEY
+    model_info:
+      mode: chat
+      notes: "14,400 req/day | 1M tokens/day"
+
+  # ==================== 7. COHERE ====================
+  - model_name: cohere-command-r-plus
+    litellm_params:
+      model: cohere/command-r-plus-08-2024
+      api_key: os.environ/COHERE_API_KEY
+    model_info:
+      mode: chat
+      notes: "20 req/min | 1,000 req/month shared"
+
+  - model_name: cohere-command-a
+    litellm_params:
+      model: cohere/command-a-03-2025
+      api_key: os.environ/COHERE_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: cohere-aya-vision
+    litellm_params:
+      model: cohere/c4ai-aya-vision-32b
+      api_key: os.environ/COHERE_API_KEY
+    model_info:
+      mode: chat
+      supports_vision: true
+
+  # ==================== 8. GITHUB MODELS ====================
+  - model_name: github-gpt-4o
+    litellm_params:
+      model: github/gpt-4o
+      api_key: os.environ/GITHUB_API_KEY
+    model_info:
+      mode: chat
+      notes: "Restrictive token limits"
+
+  - model_name: github-llama-3.3-70b
+    litellm_params:
+      model: github/Meta-Llama-3.3-70B-Instruct
+      api_key: os.environ/GITHUB_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: github-deepseek-r1
+    litellm_params:
+      model: github/DeepSeek-R1
+      api_key: os.environ/GITHUB_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: github-o3-mini
+    litellm_params:
+      model: github/o3-mini
+      api_key: os.environ/GITHUB_API_KEY
+    model_info:
+      mode: chat
+
+  - model_name: github-gpt-5
+    litellm_params:
+      model: github/gpt-5
+      api_key: os.environ/GITHUB_API_KEY
+    model_info:
+      mode: chat
+
+  # ==================== 9. CLOUDFLARE WORKERS AI ====================
+  - model_name: cf-llama-3.3-70b
+    litellm_params:
+      model: cloudflare/@cf/meta/llama-3.3-70b-instruct-fp8
+      api_key: os.environ/CLOUDFLARE_API_KEY
+      api_base: https://api.cloudflare.com/client/v4/accounts/os.environ/CLOUDFLARE_ACCOUNT_ID/ai/v1
+    model_info:
+      mode: chat
+      notes: "10,000 neurons/day"
+
+  - model_name: cf-gemma-3-12b
+    litellm_params:
+      model: cloudflare/@cf/google/gemma-3-12b-it
+      api_key: os.environ/CLOUDFLARE_API_KEY
+      api_base: https://api.cloudflare.com/client/v4/accounts/os.environ/CLOUDFLARE_ACCOUNT_ID/ai/v1
+    model_info:
+      mode: chat
+
+  - model_name: cf-qwen-3-30b
+    litellm_params:
+      model: cloudflare/@cf/qwen/qwen3-30b-a3b-fp8
+      api_key: os.environ/CLOUDFLARE_API_KEY
+      api_base: https://api.cloudflare.com/client/v4/accounts/os.environ/CLOUDFLARE_ACCOUNT_ID/ai/v1
+    model_info:
+      mode: chat
+
+  - model_name: cf-kimi-k2.6
+    litellm_params:
+      model: cloudflare/@cf/moonshotai/kimi-k2.6
+      api_key: os.environ/CLOUDFLARE_API_KEY
+      api_base: https://api.cloudflare.com/client/v4/accounts/os.environ/CLOUDFLARE_ACCOUNT_ID/ai/v1
+    model_info:
+      mode: chat
+
+  - model_name: cf-gpt-oss-120b
+    litellm_params:
+      model: cloudflare/@cf/openai/gpt-oss-120b
+      api_key: os.environ/CLOUDFLARE_API_KEY
+      api_base: https://api.cloudflare.com/client/v4/accounts/os.environ/CLOUDFLARE_ACCOUNT_ID/ai/v1
+    model_info:
+      mode: chat
+
+  # ==================== 10. UNKNOWN PROVIDER (Test) ====================
+  - model_name: unknown-sambanova-test
+    litellm_params:
+      model: sambanova/Meta-Llama-3.3-70B-Instruct
+      api_key: os.environ/UNKNOWN_API_KEY
+      api_base: https://api.sambanova.ai/v1
+    model_info:
+      mode: chat
+      notes: "TESTING: If 401, try hyperbolic or fireworks"
+
+  - model_name: unknown-hyperbolic-test
+    litellm_params:
+      model: hyperbolic/Meta-Llama-3.3-70B-Instruct
+      api_key: os.environ/UNKNOWN_API_KEY
+      api_base: https://api.hyperbolic.xyz/v1
+    model_info:
+      mode: chat
+      notes: "TESTING: Fallback base url"
+
+  - model_name: unknown-fireworks-test
+    litellm_params:
+      model: fireworks/accounts/fireworks/models/llama-v3p1-70b-instruct
+      api_key: os.environ/UNKNOWN_API_KEY
+      api_base: https://api.fireworks.ai/inference/v1
+    model_info:
+      mode: chat
+      notes: "TESTING: Third candidate"
+
+# ---------------------------------------------------------------------------
+# LITELLM CORE SETTINGS
+# ---------------------------------------------------------------------------
+litellm_settings:
+  set_verbose: False
+  json_logs: True
+
+  cache: True
+  cache_params:
+    type: redis
+    host: os.environ/REDIS_HOST
+    port: os.environ/REDIS_PORT
+    password: os.environ/REDIS_PASSWORD
+
+  success_callback: []
+  failure_callback: []
+  service_callback: []
+
+  budget_duration: "30d"
+  default_max_internal_user_budget: 10.0
+  default_max_end_user_budget: 10.0
+
+# ---------------------------------------------------------------------------
+# ROUTER & FALLBACK
+# ---------------------------------------------------------------------------
+router_settings:
+  routing_strategy: simple-shuffle
+  num_retries: 3
+  timeout: 30
+  allowed_fails: 3
+  cooldown_time: 300
+  retry_after: 5
+
+  context_window_fallbacks:
+    - groq-llama-3.3-70b:
+      - gemini-2.5-flash
+      - github-llama-3.3-70b
+
+  model_group_fallbacks:
+    - groq-llama-3.3-70b:
+      - openrouter-llama-3.3-70b
+      - github-llama-3.3-70b
+      - cf-llama-3.3-70b
+    - gemini-2.5-flash:
+      - gemini-3.1-flash-lite
+      - groq-llama-3.3-70b
+    - cerebras-llama-3.1-8b:
+      - groq-llama-3.3-70b
+      - cf-llama-3.3-70b
+
+# ---------------------------------------------------------------------------
+# GENERAL / ADMIN
+# ---------------------------------------------------------------------------
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  salt_key: os.environ/LITELLM_SALT_KEY
+  database_url: os.environ/DATABASE_URL
+  store_model_in_db: True
+  proxy_batch_write_at: 60
+  proxy_model_list: []
+  alerting: []
+  alert_types: []
+  ui_username: "admin"
+  ui_password: os.environ/LITELLM_MASTER_KEY

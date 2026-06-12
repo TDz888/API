@@ -1,1 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 AI Gateway - API Key Panel</title>
+<style>
+  :root {
+    --bg: #0f0f23;
+    --card: #16162a;
+    --card-hover: #1e1e3a;
+    --border: #2a2a4a;
+    --text: #e0e0ff;
+    --text-dim: #8888aa;
+    --accent: #00d4aa;
+    --accent-glow: rgba(0,212,170,0.3);
+    --danger: #ff4757;
+    --warning: #ffa502;
+    --success: #2ed573;
+    --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
 
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 40px 0 30px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 30px;
+  }
+  .header h1 {
+    font-size: 2.5rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+  .header p { color: var(--text-dim); font-size: 1.1rem; }
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 4px;
+  }
+
+  /* Base URL Card */
+  .base-url-card {
+    background: var(--gradient);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .base-url-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+  .base-url-card h2 {
+    position: relative;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .url-box {
+    position: relative;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-all;
+  }
+  .url-box input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    outline: none;
+  }
+  .copy-btn {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.25); }
+  .copy-btn.copied { background: var(--success); }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .stat-card:hover {
+    background: var(--card-hover);
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label { color: var(--text-dim); font-size: 0.9rem; margin-top: 4px; }
+
+  /* API Keys Section */
+  .section-title {
+    font-size: 1.5rem;
+    margin: 30px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon { font-size: 1.8rem; }
+
+  .key-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: all 0.3s;
+  }
+  .key-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+  .key-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .key-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .key-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .status-active { background: rgba(46,213,115,0.15); color: var(--success); }
+  .status-test { background: rgba(255,165,2,0.15); color: var(--warning); }
+  .status-edit { background: rgba(102,126,234,0.15); color: #667eea; }
+
+  .key-value {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .key-value input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    outline: none;
+    width: 100%;
+  }
+  .key-value input::placeholder { color: var(--text-dim); }
+  .key-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card-hover);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .btn-danger:hover { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .btn-save { background: var(--success); border-color: var(--success); color: #fff; }
+  .btn-save:hover { background: #25b865; }
+
+  /* Models Grid */
+  .models-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  .model-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s;
+  }
+  .model-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .model-provider {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .model-name { font-weight: 600; font-size: 1rem; margin-bottom: 8px; }
+  .model-limit { font-size: 0.8rem; color: var(--text-dim); }
+  .model-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-top: 8px;
+    margin-right: 4px;
+  }
+  .tag-chat { background: rgba(0,212,170,0.15); color: var(--accent); }
+  .tag-vision { background: rgba(102,126,234,0.15); color: #667eea; }
+  .tag-audio { background: rgba(255,165,2,0.15); color: var(--warning); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--success);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header h1 { font-size: 1.8rem; }
+    .url-box { flex-direction: column; align-items: stretch; }
+    .key-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🤖 AI Gateway</h1>
+    <p>Unified API for <span class="badge">10 Providers</span> <span class="badge">30+ Models</span> <span class="badge">100% Free</span></p>
+  </div>
+
+  <!-- Base URL -->
+  <div class="base-url-card">
+    <h2>🔗 Your Base URL</h2>
+    <div class="url-box">
+      <input type="text" id="baseUrl" value="https://your-app.up.railway.app/v1" readonly>
+      <button class="copy-btn" onclick="copyToClipboard('baseUrl', this)">📋 Copy</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">10</div>
+      <div class="stat-label">Providers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">30+</div>
+      <div class="stat-label">Models</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">100K+</div>
+      <div class="stat-label">Daily Requests</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">0$</div>
+      <div class="stat-label">Cost</div>
+    </div>
+  </div>
+
+  <!-- API Keys Section -->
+  <h2 class="section-title"><span class="icon">🔑</span> API Keys</h2>
+  <p style="color: var(--text-dim); margin-bottom: 20px;">
+    Click "Edit" to replace with your own keys. Click "Save" to store in browser (localStorage). 
+    <strong>Keys are NOT sent to any server.</strong>
+  </p>
+
+  <div id="keysContainer"></div>
+
+  <!-- Models Section -->
+  <h2 class="section-title"><span class="icon">🧠</span> Available Models</h2>
+  <div class="models-grid" id="modelsContainer"></div>
+
+  <!-- Usage Example -->
+  <h2 class="section-title"><span class="icon">💻</span> Quick Start</h2>
+  <div class="key-card">
+    <div class="model-provider">PYTHON SDK</div>
+    <div class="key-value" style="white-space: pre-wrap; font-size: 0.8rem; line-height: 1.6;">
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-litellm-your-virtual-key",
+    base_url="https://your-app.up.railway.app/v1"
+)
+
+response = client.chat.completions.create(
+    model="groq-llama-3.3-70b",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)
+    </div>
+    <div class="key-actions">
+      <button class="btn" onclick="copyCode(this)">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <div class="key-card">
+    <div class="model-provider">CURL</div>
+    <div class="key-value" style="white-space: pre-wrap; font-size: 0.8rem; line-height: 1.6;">
+curl https://your-app.up.railway.app/v1/chat/completions \
+  -H "Authorization: Bearer sk-litellm-your-virtual-key" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gemini-2.5-flash", "messages": [{"role": "user", "content": "Hello"}]}'
+    </div>
+    <div class="key-actions">
+      <button class="btn" onclick="copyCode(this)">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>🚀 Deployed on Railway | Powered by LiteLLM Proxy</p>
+    <p style="margin-top: 8px; font-size: 0.8rem;">
+      Admin UI: <code>/ui/</code> | Chat UI: <code>/ui/chat.html</code> | Docs: <code>/</code>
+    </p>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Copied to clipboard!</div>
+
+<script>
+// =============================================================================
+// DATA
+// =============================================================================
+const providers = [
+  { id: 'groq', name: 'Groq', icon: '⚡', status: 'active', 
+    key: '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',
+    baseUrl: 'https://api.groq.com/openai/v1',
+    limit: '14,400 req/day | 12,000 TPM' },
+  { id: 'openrouter', name: 'OpenRouter', icon: '🔀', status: 'active',
+    key: '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',
+    baseUrl: 'https://openrouter.ai/api/v1',
+    limit: '50 req/day (1,000 with $10 topup)' },
+  { id: 'nvidia', name: 'NVIDIA NIM', icon: '💚', status: 'active',
+    key: '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',
+    baseUrl: 'https://integrate.api.nvidia.com/v1',
+    limit: '40 req/min | Phone verification required' },
+  { id: 'mistral', name: 'Mistral', icon: '🔷', status: 'active',
+    key: 'Ylr6iNzABo9rsEeAUt52a8O7vxx9aKsJ',
+    baseUrl: 'https://api.mistral.ai/v1',
+    limit: '1 req/sec | 1B tokens/month | Phone verification' },
+  { id: 'gemini', name: 'Google Gemini', icon: '🔴', status: 'active',
+    key: 'AIzaSyDxX6oEJVIzwqxpeNbDghXJm',
+    baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    limit: '20-14,400 req/day (model dependent)' },
+  { id: 'cerebras', name: 'Cerebras', icon: '🟡', status: 'active',
+    key: 'csk-d688d6x66xmdefdxtpechdjmwd8pt9d63mrmhmyf2wemrwj8',
+    baseUrl: 'https://api.cerebras.ai/v1',
+    limit: '14,400 req/day | 60K TPM | ~2,100 t/s' },
+  { id: 'cohere', name: 'Cohere', icon: '⚫', status: 'active',
+    key: '1lp4vsnFw8sGVi82qtAElGafn8sN1HhxN4VKl3dL',
+    baseUrl: 'https://api.cohere.com/v1',
+    limit: '20 req/min | 1,000 req/month shared' },
+  { id: 'github', name: 'GitHub Models', icon: '⚪', status: 'active',
+    key: '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',
+    baseUrl: 'https://models.inference.ai.azure.com',
+    limit: 'Restrictive token limits | Copilot tier dependent' },
+  { id: 'cloudflare', name: 'Cloudflare Workers AI', icon: '🟠', status: 'active',
+    key: 'cfut_mv0LxWNE2wDlJY6DsZ1MxGm0AFwPAIeKFqWInRjgb2b96bbc',
+    baseUrl: 'https://api.cloudflare.com/client/v4/accounts/c1b0874b0be59bc8dd58a2e710293e7b/ai/v1',
+    limit: '10,000 neurons/day | 300+ edge locations' },
+  { id: 'unknown', name: 'Unknown Provider (Test)', icon: '❓', status: 'test',
+    key: 'sk-F9v1PpTAyB4CVvaXYp1894RnUdicmNKAx6pZwitfBuWWUkXehlOC0VNcd0Ivt3U8',
+    baseUrl: 'https://api.sambanova.ai/v1 (TEST)',
+    limit: 'Try SambaNova / Hyperbolic / Fireworks' }
+];
+
+const models = [
+  { name: 'groq-llama-3.3-70b', provider: 'Groq', limit: '1,000/day | 12K TPM', tags: ['chat'] },
+  { name: 'groq-llama-4-scout', provider: 'Groq', limit: '1,000/day | 30K TPM', tags: ['chat'] },
+  { name: 'groq-gemma-3', provider: 'Groq', limit: '14,400/day', tags: ['chat'] },
+  { name: 'groq-whisper-large', provider: 'Groq', limit: '2,000/day', tags: ['audio'] },
+  { name: 'openrouter-kimi-k2.6', provider: 'OpenRouter', limit: '50/day', tags: ['chat'] },
+  { name: 'openrouter-llama-3.3-70b', provider: 'OpenRouter', limit: '50/day', tags: ['chat'] },
+  { name: 'openrouter-gpt-oss-120b', provider: 'OpenRouter', limit: '50/day', tags: ['chat'] },
+  { name: 'openrouter-deepseek-v4-flash', provider: 'OpenRouter', limit: '50/day', tags: ['chat'] },
+  { name: 'openrouter-gemma-4-26b', provider: 'OpenRouter', limit: '50/day', tags: ['chat'] },
+  { name: 'openrouter-qwen3-coder', provider: 'OpenRouter', limit: '50/day', tags: ['chat'] },
+  { name: 'openrouter-glm-4.5-air', provider: 'OpenRouter', limit: '50/day', tags: ['chat'] },
+  { name: 'nvidia-llama-3.1-70b', provider: 'NVIDIA', limit: '40/min', tags: ['chat'] },
+  { name: 'nvidia-nemotron-3-super', provider: 'NVIDIA', limit: '40/min', tags: ['chat'] },
+  { name: 'mistral-small', provider: 'Mistral', limit: '1/sec | 1B/month', tags: ['chat'] },
+  { name: 'mistral-large', provider: 'Mistral', limit: '1/sec | 1B/month', tags: ['chat'] },
+  { name: 'mistral-codestral', provider: 'Mistral', limit: '30/min | 2,000/day', tags: ['chat'] },
+  { name: 'gemini-2.5-flash', provider: 'Google', limit: '20/day | 5/min', tags: ['chat'] },
+  { name: 'gemini-3.1-flash-lite', provider: 'Google', limit: '500/day | 15/min', tags: ['chat'] },
+  { name: 'gemma-3-27b', provider: 'Google', limit: '14,400/day | 30/min', tags: ['chat'] },
+  { name: 'gemma-3-12b', provider: 'Google', limit: '14,400/day | 30/min', tags: ['chat'] },
+  { name: 'cerebras-llama-3.1-8b', provider: 'Cerebras', limit: '14,400/day | 60K TPM', tags: ['chat'] },
+  { name: 'cerebras-gpt-oss-120b', provider: 'Cerebras', limit: '14,400/day | 1M/day', tags: ['chat'] },
+  { name: 'cohere-command-r-plus', provider: 'Cohere', limit: '1,000/month', tags: ['chat'] },
+  { name: 'cohere-command-a', provider: 'Cohere', limit: '1,000/month', tags: ['chat'] },
+  { name: 'cohere-aya-vision', provider: 'Cohere', limit: '1,000/month', tags: ['chat', 'vision'] },
+  { name: 'github-gpt-4o', provider: 'GitHub', limit: 'Token-limited', tags: ['chat'] },
+  { name: 'github-llama-3.3-70b', provider: 'GitHub', limit: 'Token-limited', tags: ['chat'] },
+  { name: 'github-deepseek-r1', provider: 'GitHub', limit: 'Token-limited', tags: ['chat'] },
+  { name: 'github-o3-mini', provider: 'GitHub', limit: 'Token-limited', tags: ['chat'] },
+  { name: 'github-gpt-5', provider: 'GitHub', limit: 'Token-limited', tags: ['chat'] },
+  { name: 'cf-llama-3.3-70b', provider: 'Cloudflare', limit: '10K neurons/day', tags: ['chat'] },
+  { name: 'cf-gemma-3-12b', provider: 'Cloudflare', limit: '10K neurons/day', tags: ['chat'] },
+  { name: 'cf-qwen-3-30b', provider: 'Cloudflare', limit: '10K neurons/day', tags: ['chat'] },
+  { name: 'cf-kimi-k2.6', provider: 'Cloudflare', limit: '10K neurons/day', tags: ['chat'] },
+  { name: 'cf-gpt-oss-120b', provider: 'Cloudflare', limit: '10K neurons/day', tags: ['chat'] },
+  { name: 'unknown-sambanova-test', provider: 'Unknown', limit: 'Testing', tags: ['chat'] },
+  { name: 'unknown-hyperbolic-test', provider: 'Unknown', limit: 'Testing', tags: ['chat'] },
+  { name: 'unknown-fireworks-test', provider: 'Unknown', limit: 'Testing', tags: ['chat'] }
+];
+
+// =============================================================================
+// FUNCTIONS
+// =============================================================================
+function maskKey(key) {
+  if (key.length <= 20) return '•'.repeat(key.length);
+  return key.substring(0, 8) + '•'.repeat(key.length - 16) + key.substring(key.length - 8);
+}
+
+function renderKeys() {
+  const container = document.getElementById('keysContainer');
+  container.innerHTML = providers.map(p => {
+    const savedKey = localStorage.getItem(`key_${p.id}`) || p.key;
+    const isEditing = localStorage.getItem(`edit_${p.id}`) === 'true';
+    return `
+      <div class="key-card">
+        <div class="key-header">
+          <div class="key-name">${p.icon} ${p.name}</div>
+          <span class="key-status status-${p.status}">${p.status === 'active' ? '● Active' : '● Testing'}</span>
+        </div>
+        <div class="key-value">
+          <input type="${isEditing ? 'text' : 'password'}" 
+                 id="key_${p.id}" 
+                 value="${savedKey}" 
+                 placeholder="Enter your API key..."
+                 ${isEditing ? '' : 'readonly'}>
+        </div>
+        <div style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 12px;">
+          📍 Base URL: <code>${p.baseUrl}</code>
+        </div>
+        <div style="color: var(--text-dim); font-size: 0.8rem; margin-bottom: 12px;">
+          🚦 Limit: ${p.limit}
+        </div>
+        <div class="key-actions">
+          <button class="btn" onclick="copyKey('key_${p.id}', this)">📋 Copy Key</button>
+          <button class="btn" onclick="toggleEdit('${p.id}')">✏️ ${isEditing ? 'Cancel' : 'Edit'}</button>
+          ${isEditing ? `<button class="btn btn-save" onclick="saveKey('${p.id}')">💾 Save</button>` : ''}
+          <button class="btn btn-danger" onclick="clearKey('${p.id}')">🗑️ Reset</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderModels() {
+  const container = document.getElementById('modelsContainer');
+  container.innerHTML = models.map(m => `
+    <div class="model-card">
+      <div class="model-provider">${m.provider}</div>
+      <div class="model-name">${m.name}</div>
+      <div class="model-limit">🚦 ${m.limit}</div>
+      <div>
+        ${m.tags.map(t => `<span class="model-tag tag-${t}">${t.toUpperCase()}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyToClipboard(inputId, btn) {
+  const input = document.getElementById(inputId);
+  input.select();
+  input.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(input.value);
+  showToast('✅ Copied to clipboard!');
+  btn.textContent = '✅ Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+function copyKey(inputId, btn) {
+  const input = document.getElementById(inputId);
+  navigator.clipboard.writeText(input.value);
+  showToast('✅ API Key copied!');
+  btn.textContent = '✅ Copied!';
+  setTimeout(() => btn.textContent = '📋 Copy Key', 2000);
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.key-card').querySelector('.key-value').innerText;
+  navigator.clipboard.writeText(code);
+  showToast('✅ Code copied!');
+  btn.textContent = '✅ Copied!';
+  setTimeout(() => btn.textContent = '📋 Copy Code', 2000);
+}
+
+function toggleEdit(id) {
+  const isEditing = localStorage.getItem(`edit_${id}`) === 'true';
+  localStorage.setItem(`edit_${id}`, !isEditing);
+  renderKeys();
+}
+
+function saveKey(id) {
+  const input = document.getElementById(`key_${id}`);
+  localStorage.setItem(`key_${id}`, input.value);
+  localStorage.setItem(`edit_${id}`, 'false');
+  showToast('💾 Key saved to browser!');
+  renderKeys();
+}
+
+function clearKey(id) {
+  localStorage.removeItem(`key_${id}`);
+  localStorage.removeItem(`edit_${id}`);
+  showToast('🗑️ Key reset to default!');
+  renderKeys();
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Auto-detect base URL from current host
+function detectBaseUrl() {
+  const currentHost = window.location.host;
+  if (currentHost && !currentHost.includes('localhost') && !currentHost.includes('127.0.0.1')) {
+    document.getElementById('baseUrl').value = `https://${currentHost}/v1`;
+  }
+}
+
+// Init
+detectBaseUrl();
+renderKeys();
+renderModels();
+</script>
+
+</body>
+</html>
